@@ -26,6 +26,7 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
  const [taxId,setTaxId]=useState("");
  const [busy,setBusy]=useState(false);
  const [notice,setNotice]=useState("");
+ const [platformRole,setPlatformRole]=useState("user");
  async function loadCompanies(){
   if(!supabase)return;
   const {data,error}=await supabase.from("organization_members").select("organization_id, organizations(id,legal_name,trade_name,tax_id)");
@@ -33,7 +34,7 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
   const rows=(data??[]).map((x:any)=>x.organizations).filter(Boolean) as Organization[];
   setCompanies(rows);if(!companyId&&rows.length)setCompanyId(rows[0].id);
  }
- useEffect(()=>{void loadCompanies();},[]);
+ useEffect(()=>{\n  if(!supabase)return;\n  void supabase.from("profiles").select("platform_role").single().then(({data})=>setPlatformRole(data?.platform_role??"user"));\n  void loadCompanies();\n },[]);
  async function createCompany(e:FormEvent<HTMLFormElement>){
   e.preventDefault();if(!supabase)return;setBusy(true);setNotice("");
   const {data,error}=await supabase.rpc("create_organization",{p_legal_name:legalName,p_tax_id:taxId||null,p_trade_name:tradeName||null});
@@ -47,7 +48,7 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
    <div className="brand"><div className="brand-mark"><Calculator size={22}/></div><div><strong>CONTANOVA</strong><small>GESTIÓN CONTABLE</small></div></div>
    <div className="workspace"><div className="workspace-icon"><Building2 size={18}/></div><div><b>{selected?.trade_name||selected?.legal_name||"Mi estudio contable"}</b><small>{selected?.tax_id||"Selecciona una empresa"}</small></div><ChevronDown size={16}/></div>
    <nav>{filtered.map(group=><section className="nav-group" key={group.title}><p>{group.title}</p>{group.items.map(item=>{const Icon=item.icon;return <button key={item.label} className={active===item.label?"nav-item selected":"nav-item"} onClick={()=>{setActive(item.label);setSidebarOpen(false);}}><Icon size={17}/><span>{item.label}</span></button>})}</section>)}</nav>
-   <div className="sidebar-bottom"><button className="nav-item" onClick={()=>setActive("Configuración")}><Settings size={17}/>Configuración</button><div className="profile"><div className="avatar">CN</div><div><b>Cuenta activa</b><small>Usuario autenticado</small></div><button className="icon-btn" aria-label="Cerrar sesión" onClick={onSignOut}><LogOut size={16}/></button></div></div>
+   <div className="sidebar-bottom"><button className="nav-item" onClick={()=>setActive("Configuración")}><Settings size={17}/>Configuración</button><div className="profile"><div className="avatar">CN</div><div><b>Cuenta activa</b><small>{platformRole==="superadmin"?"SUPERADMINISTRADOR":"Usuario autenticado"}</small></div><button className="icon-btn" aria-label="Cerrar sesión" onClick={onSignOut}><LogOut size={16}/></button></div></div>
   </aside>
   {sidebarOpen&&<button aria-label="Cerrar menú" className="scrim" onClick={()=>setSidebarOpen(false)}/>}
   <main className="main">
