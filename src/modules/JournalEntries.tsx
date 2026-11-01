@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";\nimport type { FormEvent } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { supabase } from "../lib/supabase";
 import { Plus, RefreshCw, BookOpen } from "lucide-react";
 
