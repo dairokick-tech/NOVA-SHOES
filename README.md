@@ -3,7 +3,7 @@
 Plataforma web de gestión contable y financiera orientada a Perú.
 
 ## Estado de desarrollo
-Versión 0.2.0 — base funcional inicial en evolución.
+Versión 0.2.1 — base inicial con validaciones reforzadas; todavía no es una versión productiva.
 
 ### Implementado en el repositorio
 - Aplicación React + TypeScript + Vite, adaptable a móviles.
@@ -13,6 +13,9 @@ Versión 0.2.0 — base funcional inicial en evolución.
 - Registro inicial de asientos de dos líneas con validación de partida doble en el servidor.
 - Lectura de los últimos asientos y consulta inicial del balance de comprobación.
 - Auditoría inicial de cambios de asientos.
+- Validación de rol y permisos de contabilización en el RPC de asientos (migración 0004).
+- Manejo de errores de conexión y recuperación de sesión en el acceso.
+- Accesos rápidos del panel vinculados a las secciones existentes.
 - Flujo CI para instalar dependencias y compilar la aplicación.
 
 ### Pendiente para producción
@@ -38,6 +41,7 @@ Ejecuta las migraciones en orden:
 1. `supabase/migrations/0001_initial_schema.sql`
 2. `supabase/migrations/0002_auth_and_accounting_rpcs.sql`
 3. `supabase/migrations/0003_audit_and_trial_balance.sql`
+4. `supabase/migrations/0004_harden_journal_permissions.sql`
 
 Consulta [docs/SETUP_SUPABASE.md](docs/SETUP_SUPABASE.md) para la configuración y las pruebas requeridas.
 
