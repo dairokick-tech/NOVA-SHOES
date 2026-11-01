@@ -34,7 +34,11 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
   const rows=(data??[]).map((x:any)=>x.organizations).filter(Boolean) as Organization[];
   setCompanies(rows);if(!companyId&&rows.length)setCompanyId(rows[0].id);
  }
- useEffect(()=>{\n  if(!supabase)return;\n  void supabase.from("profiles").select("platform_role").single().then(({data})=>setPlatformRole(data?.platform_role??"user"));\n  void loadCompanies();\n },[]);
+ useEffect(()=>{
+  if(!supabase)return;
+  void supabase.from("profiles").select("platform_role").single().then(({data})=>setPlatformRole(data?.platform_role??"user"));
+  void loadCompanies();
+ },[]);
  async function createCompany(e:FormEvent<HTMLFormElement>){
   e.preventDefault();if(!supabase)return;setBusy(true);setNotice("");
   const {data,error}=await supabase.rpc("create_organization",{p_legal_name:legalName,p_tax_id:taxId||null,p_trade_name:tradeName||null});
