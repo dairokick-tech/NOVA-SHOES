@@ -3,7 +3,7 @@ import {
   Activity, BookOpen, Building2, Calculator, CalendarDays, ChevronDown,
   ClipboardList, FileBarChart, FileCheck2, Files, Home, Landmark, Menu,
   Search, Settings, ShieldCheck, Users, Wallet, Bell, Plus, ArrowUpRight,
-  TrendingUp, CircleDollarSign, ReceiptText
+  TrendingUp, CircleDollarSign, ReceiptText, LogOut
 } from "lucide-react";
 
 const navGroups = [
@@ -13,7 +13,7 @@ const navGroups = [
   { title: "FINANZAS Y REPORTES", items: [{ label: "Caja y bancos", icon: Wallet }, { label: "Estados financieros", icon: FileBarChart }, { label: "Indicadores", icon: Activity }] }
 ];
 
-function App() {
+function App({ onSignOut }: { onSignOut: () => void }) {
   const [active, setActive] = useState("Panel principal");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -23,7 +23,7 @@ function App() {
       <div className="brand"><div className="brand-mark"><Calculator size={22}/></div><div><strong>CONTANOVA</strong><small>GESTIÓN CONTABLE</small></div></div>
       <div className="workspace"><div className="workspace-icon"><Building2 size={18}/></div><div><b>Estudio contable</b><small>Espacio de trabajo</small></div><ChevronDown size={16}/></div>
       <nav>{navGroups.map(group => <section className="nav-group" key={group.title}><p>{group.title}</p>{group.items.map(item => { const Icon = item.icon; return <button key={item.label} className={active === item.label ? "nav-item selected" : "nav-item"} onClick={() => {setActive(item.label);setSidebarOpen(false);}}><Icon size={17}/><span>{item.label}</span></button>; })}</section>)}</nav>
-      <div className="sidebar-bottom"><button className="nav-item" onClick={() => setActive("Configuración")}><Settings size={17}/>Configuración</button><div className="profile"><div className="avatar">AC</div><div><b>Administrador</b><small>Superadministrador</small></div><ChevronDown size={15}/></div></div>
+      <div className="sidebar-bottom"><button className="nav-item" onClick={() => setActive("Configuración")}><Settings size={17}/>Configuración</button><div className="profile"><div className="avatar">AC</div><div><b>Administrador</b><small>Usuario autenticado</small></div><button className="icon-btn" aria-label="Cerrar sesión" onClick={onSignOut}><LogOut size={16}/></button></div></div>
     </aside>
     {sidebarOpen && <button aria-label="Cerrar menú" className="scrim" onClick={() => setSidebarOpen(false)}/>}
     <main className="main">
