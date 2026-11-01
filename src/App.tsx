@@ -61,7 +61,7 @@ export default function App() {
         {message && <div className="auth-message" role="alert">{message}</div>}
         <button className="auth-submit" disabled={busy}>{busy?"Procesando…":mode==="login"?"Ingresar al sistema":"Crear cuenta"}</button>
       </form>}
-      <button className="auth-switch" onClick={()=>{setMode(mode==="login"?"signup":"login");setMessage("");}}>{mode==="login"?"¿Primera vez? Crear cuenta":"¿Ya tienes cuenta? Iniciar sesión"}</button>
+      {isSupabaseConfigured && <button className="auth-switch" onClick={()=>{setMode(mode==="login"?"signup":"login");setMessage("");}}>{mode==="login"?"¿Primera vez? Crear cuenta":"¿Ya tienes cuenta? Iniciar sesión"}</button>}
       <div className="auth-foot"><ShieldCheck size={14}/> Acceso protegido · CONTANOVA</div>
     </div>
     <div className="auth-side"><div className="auth-side-content"><div className="side-kicker">CONTROL · ORDEN · CONFIANZA</div><h2>Tu gestión contable,<br/>en un solo lugar.</h2><p>Organiza empresas, registra operaciones y prepara tus reportes desde una plataforma centralizada.</p><div className="side-feature"><span>01</span> Contabilidad organizada por empresa</div><div className="side-feature"><span>02</span> Roles y permisos de acceso</div><div className="side-feature"><span>03</span> Información financiera centralizada</div></div></div>
