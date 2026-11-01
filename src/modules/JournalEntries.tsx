@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";\nimport type { FormEvent } from "react";
 import { supabase } from "../lib/supabase";
 import { Plus, RefreshCw, BookOpen } from "lucide-react";
 
@@ -23,7 +23,7 @@ export default function JournalEntries({organizationId,onNotice}:{organizationId
   if(e.error)onNotice(e.error.message);else setEntries(e.data??[]);
  }
  useEffect(()=>{void load();},[organizationId]);
- async function save(event:React.FormEvent){
+ async function save(event:FormEvent<HTMLFormElement>){
   event.preventDefault();if(!supabase||!organizationId)return;
   const value=Number(amount);
   if(!Number.isFinite(value)||value<=0){onNotice("Ingresa un importe mayor que cero.");return;}
