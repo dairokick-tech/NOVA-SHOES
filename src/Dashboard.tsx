@@ -27,22 +27,38 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
  const [busy,setBusy]=useState(false);
  const [notice,setNotice]=useState("");
  const [platformRole,setPlatformRole]=useState("user");
- async function loadCompanies(){
+ async function loadCompanies(role = platformRole){
   if(!supabase)return;
+  if(role==="superadmin"){
+   const {data,error}=await supabase.from("organizations").select("id,legal_name,trade_name,tax_id").order("created_at",{ascending:false});
+   if(error){setNotice(error.message);return;}
+   const rows=(data??[]) as Organization[];
+   setCompanies(rows);setCompanyId(current=>current||rows[0]?.id||"");
+   return;
+  }
   const {data,error}=await supabase.from("organization_members").select("organization_id, organizations(id,legal_name,trade_name,tax_id)");
   if(error){setNotice(error.message);return;}
   const rows=(data??[]).map((x:any)=>x.organizations).filter(Boolean) as Organization[];
-  setCompanies(rows);if(!companyId&&rows.length)setCompanyId(rows[0].id);
+  setCompanies(rows);setCompanyId(current=>current||rows[0]?.id||"");
  }
  useEffect(()=>{
   if(!supabase)return;
-  void supabase.from("profiles").select("platform_role").single().then(({data})=>setPlatformRole(data?.platform_role??"user"));
-  void loadCompanies();
+  let alive=true;
+  async function initialize(){
+   const {data,error}=await supabase!.from("profiles").select("platform_role").single();
+   if(!alive)return;
+   const role=data?.platform_role??"user";
+   setPlatformRole(role);
+   if(error)setNotice(error.message);
+   await loadCompanies(role);
+  }
+  void initialize();
+  return ()=>{alive=false;};
  },[]);
  async function createCompany(e:FormEvent<HTMLFormElement>){
   e.preventDefault();if(!supabase)return;setBusy(true);setNotice("");
   const {data,error}=await supabase.rpc("create_organization",{p_legal_name:legalName,p_tax_id:taxId||null,p_trade_name:tradeName||null});
-  if(error)setNotice(error.message);else{setShowCreate(false);setLegalName("");setTradeName("");setTaxId("");await loadCompanies();if(data)setCompanyId(data);}
+  if(error)setNotice(error.message);else{setShowCreate(false);setLegalName("");setTradeName("");setTaxId("");await loadCompanies(platformRole);if(data)setCompanyId(data);}
   setBusy(false);
  }
  const selected=companies.find(c=>c.id===companyId);
