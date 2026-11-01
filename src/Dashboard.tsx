@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";\nimport type { FormEvent } from "react";
 import { Activity, BookOpen, Building2, Calculator, CalendarDays, ChevronDown, ClipboardList, FileBarChart, FileCheck2, Files, Home, Landmark, Menu, Search, Settings, ShieldCheck, Users, Wallet, Bell, Plus, ArrowUpRight, TrendingUp, CircleDollarSign, ReceiptText, LogOut, X } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import JournalEntries from "./modules/JournalEntries";
@@ -31,7 +31,7 @@ export default function Dashboard({onSignOut}:{onSignOut:()=>void}) {
   setCompanies(rows);if(!companyId&&rows.length)setCompanyId(rows[0].id);
  }
  useEffect(()=>{void loadCompanies();},[]);
- async function createCompany(e:React.FormEvent){
+ async function createCompany(e:FormEvent<HTMLFormElement>){
   e.preventDefault();if(!supabase)return;setBusy(true);setNotice("");
   const {data,error}=await supabase.rpc("create_organization",{p_legal_name:legalName,p_tax_id:taxId||null,p_trade_name:tradeName||null});
   if(error)setNotice(error.message);else{setShowCreate(false);setLegalName("");setTradeName("");setTaxId("");await loadCompanies();if(data)setCompanyId(data);}
