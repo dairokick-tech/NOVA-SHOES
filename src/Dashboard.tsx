@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";\nimport type { FormEvent } from "react";
 import { Activity, BookOpen, Building2, Calculator, CalendarDays, ChevronDown, ClipboardList, FileBarChart, FileCheck2, Files, Home, Landmark, Menu, Search, Settings, ShieldCheck, Users, Wallet, Bell, Plus, ArrowUpRight, TrendingUp, CircleDollarSign, ReceiptText, LogOut, X } from "lucide-react";
 import { supabase } from "./lib/supabase";
-import JournalEntries from "./modules/JournalEntries";
+import JournalEntries from "./modules/JournalEntries";\nimport ChartOfAccounts from "./modules/ChartOfAccounts";\nimport TrialBalance from "./modules/TrialBalance";
 
 const navGroups = [
  {title:"GENERAL",items:[{label:"Panel principal",icon:Home},{label:"Empresas y clientes",icon:Building2},{label:"Usuarios y permisos",icon:Users}]},
