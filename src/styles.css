@@ -9,3 +9,38 @@
 
 /* Ficha profesional de productos */
 .product-modal{width:min(850px,100%);max-height:92vh;overflow:auto;padding:28px}.form-kicker{font-size:9px;font-weight:800;letter-spacing:1.5px;color:#3975d9;margin-bottom:7px}.product-modal h2{margin-bottom:5px}.form-intro{font-size:11px;color:#8491a3;line-height:1.6;margin:0 0 20px}.form-section{padding:17px 0;border-top:1px solid #edf0f5}.form-section h3{font:700 12px Manrope;color:#2b3c54;margin:0 0 13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid label{display:block;font-size:10px;font-weight:600;color:#64748b;margin:0}.form-grid label.wide{grid-column:1/-1}.form-grid input,.form-grid select,.form-grid textarea{display:block;width:100%;margin-top:6px;border:1px solid #dfe5ee;border-radius:7px;padding:10px 11px;background:#fff;color:#243449;font:11px 'DM Sans';outline:none}.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus{border-color:#6b98e8;box-shadow:0 0 0 3px #3975d91a}.form-grid textarea{min-height:65px;resize:vertical}.specialized{background:#f7faff;border:1px solid #e5edfb;border-radius:9px;padding:15px;margin:10px 0}.publish-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid #edf0f5}.publish-row b,.publish-row small{display:block;font-size:11px}.publish-row small{font-size:10px;color:#8995a6;margin-top:4px}.publish-row input{width:17px;height:17px;accent-color:#326fe0}.form-actions{display:flex;justify-content:flex-end;gap:9px;padding-top:13px;border-top:1px solid #edf0f5}.form-actions button{min-width:125px}@media(max-width:560px){.product-modal{padding:22px 16px;max-height:95vh}.form-grid{grid-template-columns:1fr}.form-grid label.wide{grid-column:auto}.form-actions button{flex:1}}
+
+
+/* CONTANOVA Market: retail storefront inspired by large Peruvian ecommerce layouts */
+.storefront{border:0;border-radius:0;padding:0 22px 22px;background:#f7f7f7;color:#242424}
+.storefront-top{background:#202020;margin:0 -22px;padding:9px 24px;font-size:10px}
+.storefront-nav{background:#fff;margin:0 -22px;padding:17px 24px;gap:24px;border-bottom:1px solid #e9e9e9}
+.storefront-logo{font-size:22px;letter-spacing:-1px;color:#d71920}
+.storefront-search{background:#f4f4f4;border:1px solid #dedede;border-radius:3px;padding:11px 14px}
+.storefront-search input{font-size:13px}
+.store-cart{color:#222;font-size:12px}
+.storefront-hero{margin-top:18px;min-height:260px;border-radius:3px;padding:38px 46px;background:linear-gradient(105deg,#f8e7e8 0%,#f3cfd1 48%,#e8aeb2 100%);color:#252525}
+.storefront-hero span,.store-products-head span{color:#c51d27}
+.storefront-hero h2{font-size:34px;letter-spacing:-1.2px;color:#202020}
+.storefront-hero p{color:#5f5555;font-size:13px}
+.storefront-hero button{background:#d71920;border-radius:2px;padding:12px 22px}
+.hero-decoration{background:#ffffffa8;color:#c51d27;width:170px;height:170px}
+.store-benefits{background:#fff;margin:15px 0 0;padding:17px 10px;border:1px solid #eee;justify-content:space-around;color:#333}
+.store-categories{background:#fff;padding:22px 20px;margin-top:16px}
+.store-categories>b{font-size:16px}
+.store-categories button{border-radius:3px;background:#fff;padding:9px 15px;color:#333}
+.store-categories button:hover{border-color:#d71920;color:#c51d27}
+.store-products-head{padding:24px 0 15px}
+.store-products-head h2{font-size:21px;color:#222}
+.store-product-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.store-product{background:#fff;border:1px solid #e8e8e8;border-radius:3px}
+.store-product:hover{box-shadow:0 5px 16px #00000012;transform:translateY(-2px)}
+.store-product-image{height:190px;background:#fafafa;color:#a7a7a7}
+.store-product-info{padding:14px;gap:8px}
+.store-product-info small{color:#888}
+.store-product-info b{font-size:12px;line-height:1.5;min-height:36px}
+.store-product-info strong{font-size:18px;color:#d71920}
+.store-product-info button{border-radius:2px;border-color:#d71920;background:#d71920;color:white;padding:10px}
+.store-footer{background:#222;margin:26px -22px -22px;padding:25px 24px}
+.storefront .payment-note{background:#fff8e8}
+@media(max-width:760px){.storefront{padding:0 12px 15px}.storefront-top,.store-footer{margin-left:-12px;margin-right:-12px}.storefront-nav{margin:0 -12px;padding:13px 12px}.storefront-hero{padding:24px 20px;min-height:220px}.storefront-hero h2{font-size:26px}.store-product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.store-product-image{height:145px}.store-benefits{display:grid;grid-template-columns:repeat(2,1fr);justify-content:stretch}.storefront-top span{display:none}}
