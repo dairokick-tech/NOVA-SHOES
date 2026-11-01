@@ -23,6 +23,11 @@ begin
 end;
 $$;
 
+insert into public.profiles(id, full_name)
+select id, coalesce(raw_user_meta_data->>'full_name','')
+from auth.users
+on conflict (id) do nothing;
+
 drop trigger if exists on_auth_user_created_contanova on auth.users;
 create trigger on_auth_user_created_contanova
 after insert on auth.users
