@@ -8,6 +8,7 @@ En Supabase abre SQL Editor y ejecuta, en este orden, el contenido de:
 1. `supabase/migrations/0001_initial_schema.sql`
 2. `supabase/migrations/0002_auth_and_accounting_rpcs.sql`
 3. `supabase/migrations/0003_audit_and_trial_balance.sql`
+4. `supabase/migrations/0004_harden_journal_permissions.sql`
 
 Revisa el resultado de cada script antes de continuar. Hazlo primero en un proyecto de pruebas.
 
@@ -33,7 +34,7 @@ where p.id = u.id
 No habilites una pantalla pública para asignar ese rol.
 
 ## 6. Alta de empresa y asiento de prueba
-Después de iniciar sesión, entra a Empresas y clientes y crea una empresa de prueba con razón social y RUC de prueba válido. El servidor crea la empresa, la membresía del usuario y un conjunto inicial reducido de cuentas contables. Después, en Asientos contables, registra un asiento de prueba. El RPC del servidor comprueba que las cuentas pertenezcan a esa empresa y que debe y haber cuadren.
+Después de iniciar sesión, entra a Empresas y clientes y crea una empresa de prueba con razón social y RUC de prueba válido. El servidor crea la empresa, la membresía del usuario y un conjunto inicial reducido de cuentas contables. Después, en Asientos contables, registra un asiento de prueba. El RPC del servidor comprueba membresía y rol, que las cuentas pertenezcan a esa empresa, que cada línea tenga un importe válido y que debe y haber cuadren. Los roles auditor y cliente no pueden contabilizar.
 
 ## 7. Límites de esta versión
 - El plan contable incluido es una semilla reducida, no el PCGE completo oficial.
