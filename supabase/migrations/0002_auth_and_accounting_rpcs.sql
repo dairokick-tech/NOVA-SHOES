@@ -118,3 +118,8 @@ grant execute on function public.post_journal_entry(uuid,date,text,jsonb) to aut
 -- Nota: la creación de empresas y el registro de asientos se realizan mediante RPC
 -- para validar membresía y cuadratura en el servidor. Revisar políticas RLS adicionales
 -- antes de habilitar edición/borrado y antes de almacenar información real.
+
+revoke all on function public.create_organization(text,text,text) from public, anon;
+revoke all on function public.post_journal_entry(uuid,date,text,jsonb) from public, anon;
+grant execute on function public.create_organization(text,text,text) to authenticated;
+grant execute on function public.post_journal_entry(uuid,date,text,jsonb) to authenticated;
