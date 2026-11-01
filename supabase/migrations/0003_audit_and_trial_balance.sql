@@ -45,9 +45,9 @@ select
  a.id as account_id,
  a.code as account_code,
  a.name as account_name,
- coalesce(sum(l.debit),0)::numeric(14,2) as total_debit,
- coalesce(sum(l.credit),0)::numeric(14,2) as total_credit,
- (coalesce(sum(l.debit),0)-coalesce(sum(l.credit),0))::numeric(14,2) as net_balance
+ coalesce(sum(l.debit) filter (where e.id is not null),0)::numeric(14,2) as total_debit,
+ coalesce(sum(l.credit) filter (where e.id is not null),0)::numeric(14,2) as total_credit,
+ (coalesce(sum(l.debit) filter (where e.id is not null),0)-coalesce(sum(l.credit) filter (where e.id is not null),0))::numeric(14,2) as net_balance
 from public.chart_accounts a
 left join public.journal_lines l on l.account_id=a.id and l.organization_id=a.organization_id
 left join public.journal_entries e on e.id=l.entry_id and e.status='posted'
