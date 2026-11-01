@@ -17,21 +17,36 @@ export default function App() {
 
   useEffect(() => {
     if (!supabase) { setLoading(false); return; }
-    supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
+    let alive = true;
+    supabase.auth.getSession()
+      .then(({ data, error }) => {
+        if (!alive) return;
+        if (error) setMessage("No se pudo recuperar la sesión. Vuelve a iniciar sesión.");
+        setSession(data.session);
+      })
+      .catch(() => {
+        if (alive) setMessage("No se pudo conectar con el servicio de autenticación.");
+      })
+      .finally(() => { if (alive) setLoading(false); });
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession));
-    return () => data.subscription.unsubscribe();
+    return () => { alive = false; data.subscription.unsubscribe(); };
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!supabase) return;
     setBusy(true); setMessage("");
-    const result = mode === "login"
-      ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
-      : await supabase.auth.signUp({ email: email.trim(), password });
-    if (result.error) setMessage(result.error.message);
-    else if (mode === "signup" && !result.data.session) setMessage("Revisa tu correo para confirmar la cuenta antes de ingresar.");
-    setBusy(false);
+    try {
+      const result = mode === "login"
+        ? await supabase.auth.signInWithPassword({ email: email.trim(), password })
+        : await supabase.auth.signUp({ email: email.trim(), password });
+      if (result.error) setMessage(result.error.message);
+      else if (mode === "signup" && !result.data.session) setMessage("Revisa tu correo para confirmar la cuenta antes de ingresar.");
+    } catch {
+      setMessage("No se pudo conectar. Comprueba tu conexión e inténtalo nuevamente.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   if (loading) return <div className="auth-loading">Cargando CONTANOVA…</div>;
