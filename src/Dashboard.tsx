@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Activity, BookOpen, Building2, Calculator, CalendarDays, ChevronDown, ClipboardList, FileBarChart, FileCheck2, Files, Home, Landmark, Menu, Search, Settings, ShieldCheck, Users, Wallet, Bell, Plus, ArrowUpRight, TrendingUp, CircleDollarSign, ReceiptText, LogOut, X } from "lucide-react";
+import { Activity, BookOpen, Building2, Calculator, CalendarDays, ChevronDown, ClipboardList, FileBarChart, FileCheck2, Files, Home, Landmark, Menu, Search, Settings, ShieldCheck, Users, Wallet, Bell, Plus, ArrowUpRight, CircleDollarSign, ReceiptText, LogOut, X } from "lucide-react";
 import { supabase } from "./lib/supabase";
 import JournalEntries from "./modules/JournalEntries";
 import ChartOfAccounts from "./modules/ChartOfAccounts";
