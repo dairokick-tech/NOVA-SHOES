@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight, CheckCircle2, ChevronDown, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, Truck, X } from 'lucide-react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { ArrowRight, CheckCircle2, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, Truck, X } from 'lucide-react';
 
 type Variant = { id:string; size:string|null; color:string|null; price:number|string; compare_at_price?:number|string|null; stock:number };
 type Product = { id:string; name:string; slug:string; brand?:string; product_type:string; audience:string; description?:string; category?:string; is_featured:boolean; images:{url:string;alt?:string}[]; variants:Variant[] };
@@ -26,7 +26,7 @@ export default function Storefront(){
  const visible=products.filter(p=>(type==='all'||p.product_type===type)&&(audience==='all'||p.audience===audience||p.audience==='unisex')&&(!category||p.category===category)&&(!search||[p.name,p.brand||'',p.category||''].join(' ').toLowerCase().includes(search.toLowerCase())));
  function add(product:Product,variant:Variant){setCart(prev=>{const found=prev.find(x=>x.variant.id===variant.id);return found?prev.map(x=>x.variant.id===variant.id?{...x,quantity:x.quantity+1}:x):[...prev,{product,variant,quantity:1}];});setNotice('Producto agregado al carrito');setCartOpen(true);}
  function changeQty(id:string,delta:number){setCart(prev=>prev.map(x=>x.variant.id===id?{...x,quantity:Math.max(1,Math.min(20,x.quantity+delta))}:x));}
- async function placeOrder(e:React.FormEvent){
+ async function placeOrder(e:FormEvent){
   e.preventDefault();if(!cart.length)return;setBusy(true);
   try{
    const response=await fetch(API+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer,address,paymentMethod,note:'Pedido realizado desde la tienda NOVA SHOES',items:cart.map(x=>({variantId:x.variant.id,quantity:x.quantity}))})});
