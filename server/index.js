@@ -52,6 +52,64 @@ app.get('/api/products', async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Public storefront modules: campaigns, shipping estimates, coupon checks and order tracking.
+app.get('/api/banners', async (_req,res,next) => {
+  try {
+    const { rows } = await pool.query(`SELECT id,title,subtitle,image_url,target_url,placement
+      FROM store_banners WHERE is_active=true AND (starts_at IS NULL OR starts_at<=now())
+      AND (ends_at IS NULL OR ends_at>=now()) ORDER BY sort_order,created_at DESC LIMIT 12`);
+    res.json(rows);
+  } catch(e) { next(e); }
+});
+
+app.post('/api/shipping/quote', async (req,res,next) => {
+  const schema=z.object({department:z.string().min(2).max(80),province:z.string().max(80).optional().default(''),district:z.string().max(80).optional().default(''),subtotal:z.coerce.number().min(0).max(100000)});
+  const parsed=schema.safeParse(req.body);
+  if(!parsed.success)return res.status(400).json({error:'Destino inválido'});
+  const d=parsed.data;
+  try {
+    const {rows}=await pool.query(`SELECT base_cost,free_from,estimated_days_min,estimated_days_max,carrier_name
+      FROM shipping_zones WHERE is_active=true AND lower(department)=lower($1)
+      AND (province IS NULL OR lower(province)=lower($2))
+      AND (district IS NULL OR lower(district)=lower($3))
+      ORDER BY (district IS NOT NULL) DESC,(province IS NOT NULL) DESC LIMIT 1`,[d.department,d.province,d.district]);
+    if(!rows.length)return res.json({available:false,message:'Aún debemos confirmar la tarifa de envío para este destino.'});
+    const z=rows[0],cost=z.free_from!==null&&d.subtotal>=Number(z.free_from)?0:Number(z.base_cost);
+    res.json({available:true,cost,freeShipping:cost===0,estimatedDays:{min:z.estimated_days_min,max:z.estimated_days_max},carrier:z.carrier_name});
+  } catch(e) { next(e); }
+});
+
+app.post('/api/coupons/validate', async (req,res,next) => {
+  const schema=z.object({code:z.string().trim().min(2).max(40),subtotal:z.coerce.number().min(0).max(100000)});
+  const parsed=schema.safeParse(req.body);
+  if(!parsed.success)return res.status(400).json({valid:false,error:'Cupón inválido'});
+  try {
+    const {rows}=await pool.query(`SELECT code,discount_type,discount_value,min_subtotal,max_uses,uses_count,starts_at,ends_at
+      FROM coupons WHERE upper(code)=upper($1) AND is_active=true LIMIT 1`,[parsed.data.code]);
+    if(!rows.length)return res.json({valid:false,error:'Cupón no disponible'});
+    const c=rows[0],now=Date.now();
+    if((c.starts_at&&new Date(c.starts_at).getTime()>now)||(c.ends_at&&new Date(c.ends_at).getTime()<now)||(c.max_uses!==null&&c.uses_count>=c.max_uses)||parsed.data.subtotal<Number(c.min_subtotal))
+      return res.json({valid:false,error:'El cupón no cumple las condiciones de uso'});
+    const discount=c.discount_type==='percent'?Math.min(parsed.data.subtotal,parsed.data.subtotal*Number(c.discount_value)/100):Math.min(parsed.data.subtotal,Number(c.discount_value));
+    res.json({valid:true,code:c.code,discount:Number(discount.toFixed(2))});
+  } catch(e) { next(e); }
+});
+
+app.get('/api/orders/track', async (req,res,next) => {
+  const schema=z.object({orderNumber:z.string().min(5).max(30),phone:z.string().min(6).max(30)});
+  const parsed=schema.safeParse({orderNumber:req.query.orderNumber,phone:req.query.phone});
+  if(!parsed.success)return res.status(400).json({error:'Ingresa el número de pedido y el teléfono registrado'});
+  try {
+    const {rows}=await pool.query(`SELECT o.order_number,o.status,o.payment_status,o.total,o.created_at,
+      s.carrier_name,s.tracking_code,s.shipped_at,s.delivered_at
+      FROM orders o JOIN customers c ON c.id=o.customer_id
+      LEFT JOIN shipments s ON s.order_id=o.id
+      WHERE o.order_number=$1 AND c.phone=$2 LIMIT 1`,[parsed.data.orderNumber,parsed.data.phone]);
+    if(!rows.length)return res.status(404).json({error:'No encontramos un pedido con esos datos'});
+    res.json(rows[0]);
+  } catch(e) { next(e); }
+});
+
 const orderSchema = z.object({
   customer: z.object({ fullName:z.string().min(2).max(160), phone:z.string().min(6).max(30), email:z.string().email().optional().or(z.literal('')) }),
   address: z.object({ department:z.string().min(2), province:z.string().min(2), district:z.string().min(2), addressLine:z.string().min(5), reference:z.string().max(500).optional().default('') }),
