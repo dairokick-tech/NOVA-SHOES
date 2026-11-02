@@ -4,7 +4,7 @@ import { ArrowRight, CheckCircle2, Heart, Menu, Minus, Plus, Search, ShoppingBag
 type Variant = { id:string; size:string|null; color:string|null; price:number|string; compare_at_price?:number|string|null; stock:number };
 type Product = { id:string; name:string; slug:string; brand?:string; product_type:string; audience:string; description?:string; category?:string; is_featured:boolean; images:{url:string;alt?:string}[]; variants:Variant[] };
 type CartLine = { product:Product; variant:Variant; quantity:number };
-const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API = import.meta.env.VITE_API_URL || 'https://nova-shoes-api.onrender.com';
 const money=(n:number)=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(n);
 
 export default function Storefront(){
