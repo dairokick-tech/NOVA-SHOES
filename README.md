@@ -1,21 +1,39 @@
-# CONTANOVA
+# NOVA SHOES
 
-Sistema de gestión comercial para **una sola empresa**.
+Tienda online de zapatillas, ropa y accesorios para hombres, mujeres y niños, con entregas a todo el Perú.
 
-## Alcance
-- Punto de venta y tienda online conectados.
-- Productos, inventario, lotes, compras y proveedores.
-- Clientes, pedidos, caja, pagos y reportes.
-- Usuarios, roles, auditoría y configuración.
-- Sucursales y almacenes opcionales dentro de la misma empresa.
+## Arquitectura
+- Frontend: React + TypeScript + Vite.
+- Backend: Node.js + Express.
+- Base de datos: PostgreSQL mediante `pg`.
+- Validación: Zod.
+- Pagos iniciales: Yape, Plin, QR y transferencia con verificación manual del comprobante.
+- Moneda: soles peruanos (PEN).
 
-No incluye alta ni cambio entre múltiples empresas. La base conserva una entidad de empresa única como configuración raíz; las tablas relacionadas usan su identificador para mantener integridad y permisos.
+## Estructura
+- `src/`: interfaz web.
+- `server/`: API privada; la conexión PostgreSQL vive únicamente en el servidor.
+- `database/001_nova_shoes.sql`: esquema inicial PostgreSQL y categorías.
+- `.env.example`: variables necesarias.
 
-## Desarrollo
-- React + TypeScript + Vite.
-- Supabase/PostgreSQL previsto para persistencia y autenticación.
-- Variables públicas de conexión: `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
-- Nunca colocar claves service-role en el navegador.
+## Preparación local
+1. Instala Node.js 20 o superior y PostgreSQL 15 o superior.
+2. Crea una base de datos vacía para NOVA SHOES.
+3. Ejecuta `database/001_nova_shoes.sql` dentro de esa base.
+4. Copia `.env.example` a `.env` y completa `DATABASE_URL`.
+5. Ejecuta `npm install`.
+6. En una terminal ejecuta `npm run dev`; en otra `npm run dev:server`.
+7. Comprueba `http://localhost:4000/api/health`.
+
+## API inicial
+- `GET /api/health`
+- `GET /api/store`
+- `GET /api/categories`
+- `GET /api/products` (filtros: `q`, `category`, `audience`, `type`)
+- `POST /api/orders` (crea el pedido y reserva stock dentro de una transacción)
+
+## Seguridad y pagos
+La URL de PostgreSQL debe permanecer exclusivamente en el backend. Nunca publiques contraseñas, claves privadas ni secretos en el frontend o Git. Los métodos Yape, Plin, QR y transferencia se registran como pagos pendientes; no se considera pagado un pedido hasta que un administrador verifique el comprobante. No se simula una pasarela bancaria.
 
 ## Estado
-La interfaz inicial contiene navegación, panel de resumen, catálogo y flujo POS de demostración con almacenamiento local. Los demás módulos y la integración real con Supabase aún requieren implementación y pruebas. La migración SQL está en `supabase/migrations` y debe revisarse/aplicarse en el proyecto antes de usar datos reales.
+Esta rama inicia la migración de CONTANOVA a NOVA SHOES. La API y el esquema PostgreSQL son la primera base de trabajo; aún faltan interfaz de tienda conectada a la API, autenticación administrativa, carga segura de comprobantes, gestión de pedidos, despliegue y pruebas integrales. No usar con clientes reales hasta completar esas etapas.
