@@ -1,0 +1,67 @@
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowRight, CheckCircle2, ChevronDown, Heart, Menu, Minus, Plus, Search, ShoppingBag, ShoppingCart, Truck, X } from 'lucide-react';
+
+type Variant = { id:string; size:string|null; color:string|null; price:number|string; compare_at_price?:number|string|null; stock:number };
+type Product = { id:string; name:string; slug:string; brand?:string; product_type:string; audience:string; description?:string; category?:string; is_featured:boolean; images:{url:string;alt?:string}[]; variants:Variant[] };
+type CartLine = { product:Product; variant:Variant; quantity:number };
+const API = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const money=(n:number)=>new Intl.NumberFormat('es-PE',{style:'currency',currency:'PEN'}).format(n);
+
+export default function Storefront(){
+ const [products,setProducts]=useState<Product[]>([]),[categories,setCategories]=useState<any[]>([]),[store,setStore]=useState<any>({store_name:'NOVA SHOES',tagline:'Moda, zapatillas y estilo para todos'}),[loading,setLoading]=useState(true),[apiError,setApiError]=useState(false);
+ const [search,setSearch]=useState(''),[type,setType]=useState('all'),[audience,setAudience]=useState('all'),[category,setCategory]=useState(''),[cart,setCart]=useState<CartLine[]>([]),[cartOpen,setCartOpen]=useState(false),[checkoutOpen,setCheckoutOpen]=useState(false),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[orderResult,setOrderResult]=useState<any>(null);
+ const [customer,setCustomer]=useState({fullName:'',phone:'',email:''}),[address,setAddress]=useState({department:'',province:'',district:'',addressLine:'',reference:''}),[paymentMethod,setPaymentMethod]=useState('yape');
+ const [mobileMenu,setMobileMenu]=useState(false);
+ const total=useMemo(()=>cart.reduce((sum,line)=>sum+Number(line.variant.price)*line.quantity,0),[cart]);
+ const count=cart.reduce((sum,line)=>sum+line.quantity,0);
+ async function load(){
+  setLoading(true);setApiError(false);
+  try{
+   const [p,c,s]=await Promise.all([fetch(API+'/api/products'),fetch(API+'/api/categories'),fetch(API+'/api/store')]);
+   if(!p.ok||!c.ok||!s.ok)throw new Error('API no disponible');
+   setProducts(await p.json());setCategories(await c.json());setStore(await s.json());
+  }catch{setApiError(true);}finally{setLoading(false);}
+ }
+ useEffect(()=>{load();},[]);
+ const visible=products.filter(p=>(type==='all'||p.product_type===type)&&(audience==='all'||p.audience===audience||p.audience==='unisex')&&(!category||p.category===category)&&(!search||[p.name,p.brand||'',p.category||''].join(' ').toLowerCase().includes(search.toLowerCase())));
+ function add(product:Product,variant:Variant){setCart(prev=>{const found=prev.find(x=>x.variant.id===variant.id);return found?prev.map(x=>x.variant.id===variant.id?{...x,quantity:x.quantity+1}:x):[...prev,{product,variant,quantity:1}];});setNotice('Producto agregado al carrito');setCartOpen(true);}
+ function changeQty(id:string,delta:number){setCart(prev=>prev.map(x=>x.variant.id===id?{...x,quantity:Math.max(1,Math.min(20,x.quantity+delta))}:x));}
+ async function placeOrder(e:React.FormEvent){
+  e.preventDefault();if(!cart.length)return;setBusy(true);
+  try{
+   const response=await fetch(API+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({customer,address,paymentMethod,note:'Pedido realizado desde la tienda NOVA SHOES',items:cart.map(x=>({variantId:x.variant.id,quantity:x.quantity}))})});
+   const data=await response.json();if(!response.ok)throw new Error(data.error||'No se pudo registrar el pedido');
+   setOrderResult(data.order);setCart([]);setCheckoutOpen(false);setCartOpen(false);
+  }catch(err:any){setNotice(err.message||'No se pudo conectar con el servidor.');}finally{setBusy(false);}
+ }
+ const nav=[['all','Todo'],['sneakers','Zapatillas'],['clothing','Ropa'],['accessories','Accesorios']];
+ return <div className="nova-store">
+  <div className="nova-topline">ENVÍOS A TODO EL PERÚ · COMPRA SEGURA · MODA PARA TODA LA FAMILIA</div>
+  <header className="nova-header">
+   <button className="nova-mobile-toggle" onClick={()=>setMobileMenu(!mobileMenu)} aria-label="Abrir menú"><Menu/></button>
+   <a className="nova-logo" href="#"><span>NOVA</span> SHOES<small>MODA PARA TODOS</small></a>
+   <nav className={mobileMenu?'nova-nav open':'nova-nav'}>{nav.map(([id,label])=><button key={id} className={type===id?'active':''} onClick={()=>{setType(id);setMobileMenu(false);}}>{label}</button>)}
+    <div className="nova-audience"><button onClick={()=>setAudience(audience==='men'?'all':'men')}>Hombre</button><button onClick={()=>setAudience(audience==='women'?'all':'women')}>Mujer</button><button onClick={()=>setAudience(audience==='kids'?'all':'kids')}>Niños</button></div>
+   </nav>
+   <div className="nova-actions"><label className="nova-search"><Search size={17}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar productos"/></label><button className="nova-cart-btn" onClick={()=>setCartOpen(true)} aria-label="Carrito"><ShoppingBag size={20}/><span>{count}</span></button></div>
+  </header>
+  <main>
+   <section className="nova-hero">
+    <div className="nova-hero-copy"><span className="nova-kicker">NUEVA TEMPORADA</span><h1>Encuentra tu<br/><em>propio estilo.</em></h1><p>Zapatillas, ropa y accesorios para cada edad y cada momento.</p><button onClick={()=>document.getElementById('catalogo')?.scrollIntoView({behavior:'smooth'})}>EXPLORAR COLECCIÓN <ArrowRight size={17}/></button><div className="nova-hero-note"><Truck size={17}/> Envíos a todo el Perú</div></div>
+    <div className="nova-hero-art"><div className="nova-art-circle"></div><div className="nova-art-label">NOVA<br/>SHOES</div><div className="nova-art-caption">TU ESTILO<br/>COMIENZA AQUÍ</div></div>
+   </section>
+   <section className="nova-benefits"><div><Truck/><b>Envíos nacionales</b><small>Llegamos a todo el Perú</small></div><div><CheckCircle2/><b>Compra confiable</b><small>Verificación de cada pedido</small></div><div><ShoppingCart/><b>Pago sencillo</b><small>Yape, Plin, QR y transferencia</small></div></section>
+   <section id="catalogo" className="nova-catalog">
+    <div className="nova-section-head"><div><span className="nova-kicker">DESCUBRE NOVA</span><h2>Nuestra colección</h2><p>Encuentra lo que va contigo.</p></div><div className="nova-filters"><select value={audience} onChange={e=>setAudience(e.target.value)}><option value="all">Todas las edades</option><option value="men">Hombre</option><option value="women">Mujer</option><option value="kids">Niños</option></select><select value={category} onChange={e=>setCategory(e.target.value)}><option value="">Todas las categorías</option>{categories.map(c=><option key={c.id} value={c.name}>{c.name}</option>)}</select></div></div>
+    {loading?<div className="nova-empty">Cargando catálogo...</div>:apiError?<div className="nova-empty"><b>Estamos conectando la tienda.</b><p>El catálogo estará disponible cuando se configure la conexión con el servidor.</p><button onClick={load}>Volver a intentar</button></div>:visible.length===0?<div className="nova-empty"><ShoppingBag size={32}/><b>Próximamente encontrarás aquí nuestra colección.</b><p>Estamos preparando el catálogo de NOVA SHOES.</p></div>:
+     <div className="nova-products">{visible.map(p=><article className="nova-product" key={p.id}><div className="nova-product-image">{p.images?.[0]?.url?<img src={p.images[0].url} alt={p.images[0].alt||p.name}/>:<div className="nova-no-image"><ShoppingBag size={35}/><span>NOVA SHOES</span></div>}{p.is_featured&&<span className="nova-featured">DESTACADO</span>}<button className="nova-heart" aria-label="Favorito"><Heart size={17}/></button></div><div className="nova-product-info"><small>{p.brand||p.category||'NOVA SHOES'}</small><h3>{p.name}</h3><div className="nova-price">{p.variants?.length?money(Math.min(...p.variants.map(v=>Number(v.price)))):'Consultar'}</div><div className="nova-variant-row">{p.variants?.filter(v=>v.stock>0).slice(0,4).map(v=><button key={v.id} onClick={()=>add(p,v)} title={(v.size||'Talla única')+' '+(v.color||'')}>{v.size||v.color||'Elegir'}</button>)}</div><small className="nova-stock">{p.variants?.some(v=>v.stock>0)?'Selecciona talla o color':'Sin stock disponible'}</small></div></article>)}</div>}
+   </section>
+   <section className="nova-family"><span>PARA TODA LA FAMILIA</span><h2>Un estilo para cada historia.</h2><p>Moda y comodidad para acompañarte todos los días.</p><button onClick={()=>{setAudience('all');setType('all');document.getElementById('catalogo')?.scrollIntoView({behavior:'smooth'});}}>VER COLECCIÓN <ArrowRight size={16}/></button></section>
+  </main>
+  <footer className="nova-footer"><a className="nova-logo" href="#"><span>NOVA</span> SHOES<small>MODA PARA TODOS</small></a><p>Zapatillas, ropa y accesorios para todos. Envíos a todo el Perú.</p><small>© {new Date().getFullYear()} NOVA SHOES. Todos los derechos reservados.</small></footer>
+  {notice&&<div className="nova-toast" onClick={()=>setNotice('')}>{notice}<X size={14}/></div>}
+  {cartOpen&&<div className="nova-overlay" onClick={()=>setCartOpen(false)}><aside className="nova-drawer" onClick={e=>e.stopPropagation()}><div className="nova-drawer-head"><h2>Tu carrito ({count})</h2><button onClick={()=>setCartOpen(false)}><X/></button></div>{cart.length? <><div className="nova-cart-lines">{cart.map(line=><div className="nova-cart-line" key={line.variant.id}><div className="nova-cart-thumb">{line.product.images?.[0]?.url?<img src={line.product.images[0].url}/>:<ShoppingBag/>}</div><div className="nova-cart-detail"><b>{line.product.name}</b><small>{line.variant.size||'Talla única'} · {line.variant.color||'Color no especificado'}</small><strong>{money(Number(line.variant.price)*line.quantity)}</strong><div className="nova-qty"><button onClick={()=>changeQty(line.variant.id,-1)}><Minus size={13}/></button><span>{line.quantity}</span><button onClick={()=>changeQty(line.variant.id,1)}><Plus size={13}/></button></div></div></div>)}</div><div className="nova-cart-total"><span>Subtotal</span><b>{money(total)}</b></div><small className="nova-shipping-note">El costo y plazo de envío se confirmarán según tu destino.</small><button className="nova-primary" onClick={()=>{setCartOpen(false);setCheckoutOpen(true);}}>CONTINUAR CON LA COMPRA <ArrowRight size={16}/></button></>:<div className="nova-empty">Tu carrito está vacío.</div>}</aside></div>}
+  {checkoutOpen&&<div className="nova-overlay" onClick={()=>setCheckoutOpen(false)}><section className="nova-checkout" onClick={e=>e.stopPropagation()}><div className="nova-drawer-head"><h2>Finalizar pedido</h2><button onClick={()=>setCheckoutOpen(false)}><X/></button></div><form onSubmit={placeOrder}><h3>Datos de contacto</h3><div className="nova-form-grid"><input required placeholder="Nombre completo" value={customer.fullName} onChange={e=>setCustomer({...customer,fullName:e.target.value})}/><input required placeholder="Celular" value={customer.phone} onChange={e=>setCustomer({...customer,phone:e.target.value})}/><input type="email" placeholder="Correo (opcional)" value={customer.email} onChange={e=>setCustomer({...customer,email:e.target.value})}/></div><h3>Dirección de entrega</h3><div className="nova-form-grid"><input required placeholder="Departamento" value={address.department} onChange={e=>setAddress({...address,department:e.target.value})}/><input required placeholder="Provincia" value={address.province} onChange={e=>setAddress({...address,province:e.target.value})}/><input required placeholder="Distrito" value={address.district} onChange={e=>setAddress({...address,district:e.target.value})}/><input required placeholder="Dirección exacta" value={address.addressLine} onChange={e=>setAddress({...address,addressLine:e.target.value})}/><input placeholder="Referencia (opcional)" value={address.reference} onChange={e=>setAddress({...address,reference:e.target.value})}/></div><h3>Medio de pago</h3><div className="nova-pay-options">{[['yape','Yape'],['plin','Plin'],['qr','QR'],['transferencia','Transferencia']].map(([id,label])=><label key={id}><input type="radio" name="payment" value={id} checked={paymentMethod===id} onChange={()=>setPaymentMethod(id)}/>{label}</label>)}</div><div className="nova-check-total"><span>Total de productos</span><b>{money(total)}</b></div><p className="nova-shipping-note">El pedido quedará pendiente de pago. El equipo NOVA SHOES confirmará los datos de pago y el envío.</p><button className="nova-primary" disabled={busy}>{busy?'REGISTRANDO PEDIDO...':'CONFIRMAR PEDIDO'}</button></form></section></div>}
+  {orderResult&&<div className="nova-overlay"><section className="nova-success"><CheckCircle2 size={45}/><h2>¡Pedido registrado!</h2><p>Tu número de pedido es <b>{orderResult.order_number}</b>.</p><p>Estado: pendiente de pago. NOVA SHOES coordinará la confirmación del pago y el envío.</p><button className="nova-primary" onClick={()=>setOrderResult(null)}>VOLVER A LA TIENDA</button></section></div>}
+ </div>;
+}
