@@ -27,6 +27,8 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build and validate NOVA SHOES
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
         run: npm run build\n      - name: Enable SPA deep links for /admin\n        run: cp dist/index.html dist/404.html
       - name: Save website artifact for Pages deployment
         uses: actions/upload-artifact@v4
