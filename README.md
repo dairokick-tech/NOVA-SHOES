@@ -16,7 +16,12 @@ El panel privado incluye configuración inicial de propietario de un solo uso, i
 - Pagos iniciales: Yape, Plin, QR y transferencia con verificación manual.
 - Moneda: soles peruanos (PEN).
 
-## Despliegue del backend en Render\nEl archivo `render.yaml` define el servicio `nova-shoes-api`. Desde Render, crea un Blueprint nuevo conectado a este repositorio y selecciona la rama `nova-shoes`. En la configuración del servicio añade las URLs de Neon en `DATABASE_URL` (pooler) y `DIRECT_URL` (conexión directa). Render genera `SESSION_SECRET` y `ADMIN_BOOTSTRAP_KEY` automáticamente. El primer despliegue ejecuta las migraciones antes de iniciar la API.\n\nLa URL prevista del servicio es `https://nova-shoes-api.onrender.com`; si Render asigna otra, actualiza la variable de repositorio `VITE_API_URL` en GitHub y vuelve a ejecutar el workflow de Pages.\n\n## Configuración necesaria del servidor
+## Despliegue del backend en Render
+El archivo `render.yaml` define el servicio `nova-shoes-api`. Desde Render, crea un Blueprint nuevo conectado a este repositorio y selecciona la rama `nova-shoes`. En la configuración del servicio añade las URLs de Neon en `DATABASE_URL` (pooler) y `DIRECT_URL` (conexión directa). Render genera `SESSION_SECRET` y `ADMIN_BOOTSTRAP_KEY` automáticamente. El primer despliegue ejecuta las migraciones antes de iniciar la API.
+
+La URL prevista del servicio es `https://nova-shoes-api.onrender.com`; si Render asigna otra, actualiza la variable de repositorio `VITE_API_URL` en GitHub y vuelve a ejecutar el workflow de Pages.
+
+## Configuración necesaria del servidor
 Configura estas variables **en el proveedor del backend**, nunca en GitHub ni en el frontend:
 - `DATABASE_URL`: cadena pooled de PostgreSQL.
 - `DIRECT_URL`: conexión directa para migraciones.
