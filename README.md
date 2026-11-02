@@ -16,7 +16,7 @@ El panel privado incluye configuración inicial de propietario de un solo uso, i
 - Pagos iniciales: Yape, Plin, QR y transferencia con verificación manual.
 - Moneda: soles peruanos (PEN).
 
-## Configuración necesaria del servidor
+## Despliegue del backend en Render\nEl archivo `render.yaml` define el servicio `nova-shoes-api`. Desde Render, crea un Blueprint nuevo conectado a este repositorio y selecciona la rama `nova-shoes`. En la configuración del servicio añade las URLs de Neon en `DATABASE_URL` (pooler) y `DIRECT_URL` (conexión directa). Render genera `SESSION_SECRET` y `ADMIN_BOOTSTRAP_KEY` automáticamente. El primer despliegue ejecuta las migraciones antes de iniciar la API.\n\nLa URL prevista del servicio es `https://nova-shoes-api.onrender.com`; si Render asigna otra, actualiza la variable de repositorio `VITE_API_URL` en GitHub y vuelve a ejecutar el workflow de Pages.\n\n## Configuración necesaria del servidor
 Configura estas variables **en el proveedor del backend**, nunca en GitHub ni en el frontend:
 - `DATABASE_URL`: cadena pooled de PostgreSQL.
 - `DIRECT_URL`: conexión directa para migraciones.
@@ -29,7 +29,7 @@ Configura estas variables **en el proveedor del backend**, nunca en GitHub ni en
 En la configuración de GitHub Pages, agrega la variable de repositorio `VITE_API_URL` con la URL HTTPS pública del backend (sin barra final). El workflow la incorpora al compilar el frontend. Sin un backend desplegado y una base PostgreSQL conectada, el panel mostrará que el servidor no está disponible y no aceptará credenciales.
 
 ## Primer acceso del propietario
-1. Despliega el backend y conecta PostgreSQL.
+1. Crea el Blueprint de Render desde `render.yaml`, despliega el backend y conecta PostgreSQL.
 2. Ejecuta `npm run db:migrate` en el entorno del backend para aplicar el esquema inicial y migraciones.
 3. Configura `SESSION_SECRET` y `ADMIN_BOOTSTRAP_KEY` como secretos del host.
 4. Abre la ruta `/admin`. Si no existe ningún administrador, aparecerá el formulario de configuración inicial.
