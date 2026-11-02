@@ -111,7 +111,7 @@ app.patch('/api/admin/orders/:id/payment',requireAdmin,async(req,res,next)=>{
       for(const item of items.rows)if(item.variant_id){
         const updated=await client.query('UPDATE product_variants SET stock_on_hand=stock_on_hand-$1,stock_reserved=GREATEST(stock_reserved-$1,0) WHERE id=$2 AND stock_on_hand >= $1 RETURNING id',[item.quantity,item.variant_id]);
         if(!updated.rowCount)throw Object.assign(new Error('Stock insuficiente al confirmar el pago.'),{status:409});
-        await client.query("INSERT INTO inventory_movements(variant_id,movement_type,quantity,reference_type,reference_id,note) VALUES($1,'out','0', 'order',$2,'Venta confirmada')".replace("'0'","$3"),[item.variant_id,item.quantity,req.params.id]);
+        await client.query("INSERT INTO inventory_movements(variant_id,movement_type,quantity,reference_type,reference_id,note) VALUES($1,'out',$2,'order',$3,'Venta confirmada')",[item.variant_id,item.quantity,req.params.id]);
       }
       await client.query("UPDATE orders SET payment_status='verified',status='paid' WHERE id=$1",[req.params.id]);
     } else {
