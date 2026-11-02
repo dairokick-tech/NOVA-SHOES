@@ -1,4 +1,4 @@
-name: Publish NOVA SHOES to GitHub Pages
+name: Publish NOVA SHOES with order receipts to GitHub Pages
 
 on:
   push:
