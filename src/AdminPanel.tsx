@@ -48,7 +48,7 @@ export default function AdminPanel(){
   <button disabled={busy}>{busy?'Procesando…':mode==='setup'?'Crear propietario':'Ingresar al panel'}</button>
   <small>Acceso privado · NOVA SHOES · La contraseña se almacena cifrada mediante hash seguro.</small>
  </form></div>;
- const nav=[['dashboard','Panel general',Activity],['orders','Pedidos y pagos',ClipboardList],['products','Productos e inventario',Boxes]];
+ const nav: [string,string,typeof Activity][]=[['dashboard','Panel general',Activity],['orders','Pedidos y pagos',ClipboardList],['products','Productos e inventario',Boxes]];
  return <div className="ns-admin">
   <aside className="ns-admin-side"><a className="ns-brand" href={import.meta.env.BASE_URL}>NOVA <i>SHOES</i></a><small>ADMINISTRACIÓN PRIVADA</small><nav>{nav.map(([id,label,Icon]:any)=><button key={id} className={section===id?'active':''} onClick={()=>setSection(id)}><Icon size={17}/>{label}</button>)}</nav><button className="ns-admin-logout" onClick={logout}><LogOut size={17}/> Cerrar sesión</button></aside>
   <main className="ns-admin-main"><header><div><span>ADMINISTRACIÓN / NOVA SHOES</span><h1>{nav.find(x=>x[0]===section)?.[1]}</h1></div><div className="ns-admin-user"><ShieldCheck size={18}/><span>{user?.full_name}<small>{user?.role==='owner'?'Propietario':'Administrador'}</small></span><button onClick={()=>refresh()} aria-label="Actualizar"><RefreshCw size={17}/></button></div></header>
