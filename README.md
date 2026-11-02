@@ -25,7 +25,7 @@ Tienda online de zapatillas, ropa y accesorios para hombres, mujeres y niños, c
 6. En una terminal ejecuta `npm run dev`; en otra `npm run dev:server`.
 7. Comprueba `http://localhost:4000/api/health`.
 
-## API inicial
+## Módulos ampliados\nLa migración `database/migrations/002_commerce_modules.sql` agrega banners, cupones, zonas y tarifas de envío, transportistas/seguimiento, devoluciones, reseñas, listas de deseos, páginas de tienda y auditoría. La API incluye consulta de banners, cotización de envío, validación de cupones y seguimiento de pedidos. Ver `docs/MODULES.md`.\n\n## API inicial
 - `GET /api/health`
 - `GET /api/store`
 - `GET /api/categories`
