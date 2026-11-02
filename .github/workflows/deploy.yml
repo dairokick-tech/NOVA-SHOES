@@ -1,8 +1,8 @@
-name: Deploy CONTANOVA to GitHub Pages
+name: Deploy NOVA SHOES to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [nova-shoes]
   workflow_dispatch:
 
 permissions:
@@ -18,15 +18,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout NOVA SHOES
         uses: actions/checkout@v4
+        with:
+          ref: nova-shoes
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
       - name: Install dependencies
         run: npm install
-      - name: Build application
+      - name: Build NOVA SHOES
         run: npm run build
       - name: Configure Pages
         uses: actions/configure-pages@v5
@@ -42,6 +45,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy NOVA SHOES to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
