@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Activity, Boxes, ClipboardList, LogOut, Package, RefreshCw, ShieldCheck, ShoppingBag, Users } from 'lucide-react';
 
-const API=(import.meta.env.VITE_API_URL||'').replace(/\/$/,'');
+const API=(import.meta.env.VITE_API_URL||'https://nova-shoes-api.onrender.com').replace(/\/$/,'');
 async function call(path:string,options:RequestInit={}) {
  const response=await fetch(API+'/api'+path,{...options,credentials:'include',headers:{'Content-Type':'application/json',...(options.headers||{})}});
  const data=await response.json().catch(()=>({error:'Respuesta inválida del servidor'}));
