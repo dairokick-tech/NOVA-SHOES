@@ -28,3 +28,41 @@
 .ns-admin-auth,.ns-admin-loading{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top right,#343434,#101010 60%);padding:20px;font-family:Arial,Helvetica,sans-serif}.ns-admin-loading{color:#fff;font-size:13px}.ns-admin-auth-card{width:min(430px,100%);background:#fff;padding:34px;border-radius:12px;box-shadow:0 25px 70px #0005;display:flex;flex-direction:column;gap:13px}.ns-admin-auth-card .ns-brand{margin-bottom:15px}.ns-admin-eyebrow{font-size:9px;letter-spacing:2px;color:#ed1018;font-weight:900}.ns-admin-auth-card h1{font-size:26px;margin:0}.ns-admin-auth-card p{font-size:12px;color:#777;line-height:1.6;margin:0 0 8px}.ns-admin-auth-card label{font-size:11px;font-weight:700;display:grid;gap:7px}.ns-admin-auth-card input{width:100%;padding:13px;border:1px solid #ddd;border-radius:5px;font-size:13px}.ns-admin-auth-card>button{border:0;background:#ed1018;color:#fff;padding:14px;border-radius:5px;font-weight:900;margin-top:7px}.ns-admin-auth-card>button:disabled{opacity:.6}.ns-admin-auth-card>small{font-size:9px;color:#999;line-height:1.5;text-align:center;margin-top:8px}.ns-admin-error{background:#fff0f0;color:#a00008;padding:12px;border-radius:5px;font-size:11px}
 @media(max-width:850px){.ns-admin{grid-template-columns:1fr}.ns-admin-side{position:relative;height:auto;min-height:0;padding:16px;display:grid;grid-template-columns:1fr auto;align-items:center}.ns-admin-side>small{margin:0;text-align:right}.ns-admin-side nav{grid-column:1/-1;display:flex;overflow:auto;margin-top:14px}.ns-admin-side nav button{white-space:nowrap;padding:10px}.ns-admin-logout{grid-column:1/-1;margin-top:10px;padding:10px 0 0}.ns-admin-main{padding:20px}.ns-admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.ns-admin-main{padding:14px}.ns-admin-main>header h1{font-size:22px}.ns-admin-user{font-size:10px}.ns-admin-stats article{padding:14px}.ns-admin-stats article b{font-size:21px}.ns-admin-auth-card{padding:25px}}
+
+/* Printable NOVA SHOES order receipt */
+.nova-receipt-overlay{z-index:1000;align-items:flex-start;overflow:auto;padding:22px 12px}
+.nova-receipt-dialog{width:min(560px,100%);margin:auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+.nova-receipt-actions{width:100%;display:flex;justify-content:flex-end;gap:8px}
+.nova-receipt-actions button{border:0;border-radius:5px;background:#e50916;color:#fff;font-size:10px;font-weight:900;padding:12px 15px;cursor:pointer}
+.nova-receipt-actions button+button{background:#333}
+.nova-receipt{background:#fff;color:#111;width:100%;max-width:420px;padding:28px 24px;font-family:Arial,Helvetica,sans-serif;font-size:12px;box-shadow:0 10px 35px #0004}
+.nova-receipt header{display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center}
+.nova-receipt header b{font-size:25px;font-weight:950;font-style:italic;letter-spacing:-1px}
+.nova-receipt header b::first-letter{color:#e50916}
+.nova-receipt header span{font-size:14px;font-weight:800;letter-spacing:1px}
+.nova-receipt header strong{font-size:19px}
+.nova-receipt hr{border:0;border-top:2px solid #222;margin:13px 0}
+.nova-receipt p{margin:7px 0;line-height:1.4;overflow-wrap:anywhere}
+.nova-receipt-columns,.nova-receipt-line{display:grid;grid-template-columns:minmax(0,1fr) 42px 75px 75px;gap:5px;align-items:start;padding:7px 0;border-bottom:1px solid #ddd}
+.nova-receipt-columns{font-size:10px;font-weight:900;border-bottom:2px solid #222}
+.nova-receipt-columns b:not(:first-child),.nova-receipt-line span:not(:first-child){text-align:right}
+.nova-receipt-line{font-size:10px}
+.nova-receipt-line small{display:block;color:#666;margin-top:3px}
+.nova-receipt-total{display:grid;grid-template-columns:1fr auto;gap:9px;font-size:12px;padding:8px 0}
+.nova-receipt-total span:nth-child(3),.nova-receipt-total b:nth-child(4){font-size:15px;font-weight:900}
+.nova-receipt-words,.nova-receipt-status{font-weight:800;text-align:center}
+.nova-receipt-status{background:#fff2f2;color:#a00008;padding:8px}
+.nova-receipt footer{text-align:center;font-weight:700;line-height:1.8}
+.nova-receipt footer small{display:block;font-size:9px;font-weight:400;color:#666;margin-top:12px}
+.nova-receipt-hint{color:#fff;text-align:center;font-size:11px}
+@media print{
+ @page{size:80mm auto;margin:4mm}
+ body *{visibility:hidden!important}
+ .nova-receipt-overlay,.nova-receipt-overlay *{visibility:visible!important}
+ .nova-receipt-overlay{position:absolute!important;inset:0!important;display:block!important;background:#fff!important;padding:0!important;overflow:visible!important}
+ .nova-receipt-dialog{width:100%!important;max-width:none!important;display:block!important}
+ .nova-receipt-actions,.nova-receipt-hint{display:none!important}
+ .nova-receipt{box-shadow:none!important;width:100%!important;max-width:none!important;padding:0!important;font-size:10px!important}
+ .nova-receipt header b{font-size:20px!important}
+ .nova-receipt-columns,.nova-receipt-line{grid-template-columns:minmax(0,1fr) 28px 52px 55px!important;gap:3px!important}
+}
