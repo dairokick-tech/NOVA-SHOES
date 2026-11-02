@@ -1,4 +1,4 @@
-name: Build NOVA SHOES
+name: Build and deploy NOVA SHOES
 
 on:
   push:
@@ -7,13 +7,18 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: nova-shoes-build
+  group: github-pages
   cancel-in-progress: false
 
 jobs:
   build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout NOVA SHOES
@@ -24,6 +29,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
       - name: Install dependencies
         run: npm install
       - name: Build and validate NOVA SHOES
@@ -34,10 +42,10 @@ jobs:
         run: node --check server/index.js && node --check server/migrate.js
       - name: Enable SPA deep links for /admin
         run: cp dist/index.html dist/404.html
-      - name: Save website artifact for Pages deployment
-        uses: actions/upload-artifact@v4
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: nova-shoes-dist
           path: dist
-          if-no-files-found: error
-          retention-days: 2
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
