@@ -5,10 +5,19 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { Pool } from 'pg';
 import { z } from 'zod';
-import { randomUUID } from 'node:crypto';
 
 const app = express();
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : undefined, max: 10 });
+if (!process.env.DATABASE_URL) {
+  console.error('Falta DATABASE_URL. Configura la conexión pooled de Neon en el entorno del servidor.');
+  process.exit(1);
+}
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 10,
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
+  enableChannelBinding: true
+});
 app.use(helmet());
 app.use(cors({ origin: (process.env.CORS_ORIGIN || 'http://localhost:5173').split(','), credentials: false }));
 app.use(express.json({ limit: '1mb' }));
