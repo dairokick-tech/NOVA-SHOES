@@ -195,15 +195,19 @@ app.post('/api/admin/bootstrap',loginLimiter,async(req,res,next)=>{
   if(!process.env.ADMIN_BOOTSTRAP_KEY||!process.env.SESSION_SECRET||process.env.SESSION_SECRET.length<32)return res.status(503).json({error:'Faltan ADMIN_BOOTSTRAP_KEY o SESSION_SECRET en el servidor.'});
   const supplied=Buffer.from(parsed.data.bootstrapKey),expected=Buffer.from(process.env.ADMIN_BOOTSTRAP_KEY);
   if(supplied.length!==expected.length||!timingSafeEqual(supplied,expected))return res.status(403).json({error:'Clave de configuración incorrecta.'});
+  const client=await pool.connect();
   try {
-    const {rows}=await pool.query('SELECT count(*)::int AS count FROM admin_users');
-    if(rows[0].count!==0)return res.status(409).json({error:'La configuración inicial ya fue realizada.'});
+    await client.query('BEGIN');
+    await client.query('SELECT pg_advisory_xact_lock(7410292026)');
+    const {rows}=await client.query('SELECT count(*)::int AS count FROM admin_users');
+    if(rows[0].count!==0){await client.query('ROLLBACK');return res.status(409).json({error:'La configuración inicial ya fue realizada.'});}
     const salt=randomBytes(16).toString('hex');
     const hash=await scrypt(parsed.data.password,salt,64);
-    const result=await pool.query('INSERT INTO admin_users(full_name,email,password_hash,role) VALUES($1,lower($2),$3,$4) RETURNING id,full_name,email,role,is_active',[parsed.data.fullName,parsed.data.email,`scrypt:${salt}:${Buffer.from(hash).toString('hex')}`,'owner']);
+    const result=await client.query('INSERT INTO admin_users(full_name,email,password_hash,role) VALUES($1,lower($2),$3,$4) RETURNING id,full_name,email,role,is_active',[parsed.data.fullName,parsed.data.email,`scrypt:${salt}:${Buffer.from(hash).toString('hex')}`,'owner']);
+    await client.query('COMMIT');
     res.cookie(cookieName,issueSession(result.rows[0]),{httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:process.env.NODE_ENV==='production'?'none':'lax',path:'/',maxAge:SESSION_TTL*1000});
     res.status(201).json({user:result.rows[0]});
-  } catch(e){next(e);}
+  } catch(e){await client.query('ROLLBACK');next(e);} finally {client.release();}
 });
 app.post('/api/admin/login',loginLimiter,async(req,res,next)=>{
   const parsed=z.object({email:z.string().email(),password:z.string().min(1).max(128)}).safeParse(req.body);
