@@ -29,7 +29,13 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build NOVA SHOES
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://nova-shoes-api.onrender.com' }}
         run: npm run build
+      - name: Check backend JavaScript syntax
+        run: node --check server/index.js && node --check server/migrate.js
+      - name: Enable SPA deep links for /admin
+        run: cp dist/index.html dist/404.html
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload NOVA SHOES website
