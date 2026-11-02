@@ -1,4 +1,4 @@
-name: Publish NOVA SHOES with order receipts and IGV breakdown to GitHub Pages
+name: Publish NOVA SHOES with connected API defaults to GitHub Pages
 
 on:
   push:
