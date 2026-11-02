@@ -19,3 +19,7 @@ No incluye alta ni cambio entre múltiples empresas. La base conserva una entida
 
 ## Estado
 La interfaz inicial contiene navegación, panel de resumen, catálogo y flujo POS de demostración con almacenamiento local. Los demás módulos y la integración real con Supabase aún requieren implementación y pruebas. La migración SQL está en `supabase/migrations` y debe revisarse/aplicarse en el proyecto antes de usar datos reales.
+
+
+## Publicación NOVA SHOES
+GitHub Pages compila la aplicación de la rama `nova-shoes` mediante `.github/workflows/deploy.yml`. La rama `main` conserva el contenido anterior del repositorio y actúa como disparador de publicación.
